@@ -1,0 +1,4 @@
+com\kuang\config\RedisConfig.class
+com\kuang\Redis02SpringbootApplication.class
+com\kuang\pojo\User.class
+com\kuang\utils\RedisUtil.class
