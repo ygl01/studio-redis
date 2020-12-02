@@ -15,6 +15,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 
 
+import java.util.Map;
 import java.util.Set;
 
 @SpringBootTest
@@ -29,8 +30,30 @@ class Redis02SpringbootApplicationTests {
 
     @Test
     public void test1(){
-        redisUtil.set("key01", "value01");
-        System.out.println(redisUtil.get("key01"));
+        //获取redis连接  且将当前库中所有key value删除
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+        connection.flushDb();
+//        redisUtil.set("key01", "value01");
+//        System.out.println(redisUtil.get("key01"));
+        redisUtil.hset("key01","10000","1022");
+        redisUtil.hset("key01","10001","1023");
+
+        //通过外层key拿到下面的对象，外层key一般都是已知的
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries("key01");
+        //假设该变量就是前端传来的value
+        String valueName= "022";
+        //遍历缓存对象
+        for (Object value : entries.keySet()) {
+            //如果value是对象直接强转对象即可
+            String o = (String) entries.get(value);
+            System.out.println("查询的O值："+o);
+            //字符串在缓存中取出来有的时候会多出一对双引号，可以debug看一下，把引号去掉
+            o = o.replace("\"", "");
+            //用假设前端的value和对象下的value相比较，相同则取出对应key即可
+            if (o.matches(".*"+valueName+".*")){
+                System.out.println(valueName + "的key值："+value);
+            }
+        }
     }
 
     @Test
