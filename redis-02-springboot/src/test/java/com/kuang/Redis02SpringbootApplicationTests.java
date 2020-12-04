@@ -1,32 +1,117 @@
 package com.kuang;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuang.pojo.Test1;
 import com.kuang.pojo.User;
+import com.kuang.service.TestService;
 import com.kuang.utils.RedisUtil;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-
-
-import com.kuang.config.RedisConfig.*;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 
 
+import java.io.PipedInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 @SpringBootTest
 class Redis02SpringbootApplicationTests {
 
     @Autowired
-    @Qualifier("redisTemplate")
-    private RedisTemplate redisTemplate;
+    //注意添加这个注解指定我们自己编写的redisTemplate
+    @Qualifier("redisTemplate1")
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private TestService testService;
+
+    @Test
+    public void selectPipellined(){
+        System.out.println("开始查询");
+        long l = System.currentTimeMillis();
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 0; i < 478385; i++) {
+            keys.add(("pipel:" + i));
+            System.out.println("第一次："+i);
+        }
+        redisTemplate.executePipelined(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection connection) throws DataAccessException {
+                for (String key : keys) {
+                    connection.get(key.getBytes());
+                    System.out.println("第二次："+key);
+                }
+                System.out.println("大小："+redisTemplate.keys("*").size());
+                return null;
+            }
+        });
+        long l1 = System.currentTimeMillis();
+
+        System.out.println("结束："+(l1-l));
+    }
+
+    @Test
+    public void testPipellined(){
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+        connection.flushDb();
+        System.out.println("开始查询数据库");
+        List<Test1> all = testService.findAll();
+        System.out.println("大小："+all.size());
+        System.out.println("开始导入redis");
+        long l = System.currentTimeMillis();
+//        for (int i = 0;i<all.size();i++){
+//            Test1 test1 = all.get(i);
+//            String s = JSON.toJSONString(test1);
+//            redisUtil.set(("iii"+i),s);
+//
+//        }
+        redisTemplate.executePipelined(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection connection) throws DataAccessException {
+                for (int i = 0; i < all.size(); i++) {
+                    Test1 test1 = all.get(i);
+                    String s = JSON.toJSONString(test1);
+                    connection.set(("pipel:" + i).getBytes(),s.getBytes() );
+                }
+
+                return null;
+            }
+        });
+        long l1 = System.currentTimeMillis();
+        System.out.println("结束："+(l1-l));
+    }
+
+    @Test
+    public void test3(){
+        //获取redis连接
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+        //清空数据库中当前库的所有数据，类似在redis客户端中操作FLUSHDB操作
+        connection.flushDb();
+
+        redisUtil.set("age",18);
+        System.out.println(redisUtil.get("age"));
+
+        //这个是操作字符串的set方法
+        //redisTemplate.opsForValue().set("name","ygl");
+
+        //打印获取的key为name的value值
+        //System.out.println(redisTemplate.opsForValue().get("name"));
+
+    }
 
     @Test
     public void test1(){
@@ -84,8 +169,9 @@ class Redis02SpringbootApplicationTests {
         RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
         connection.flushDb();
         User user = new User("狂神说", 3);
+        String str= JSON.toJSONString(user);
 //        String jsonUser = new ObjectMapper().writeValueAsString(user);
-        redisTemplate.opsForValue().set("user",user);
+        redisTemplate.opsForValue().set("user",str);
         System.out.println(redisTemplate.opsForValue().get("user"));
     }
 

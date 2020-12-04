@@ -16,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class User implements Serializable {
+public class User {
     private String name;
     private int age;
 }

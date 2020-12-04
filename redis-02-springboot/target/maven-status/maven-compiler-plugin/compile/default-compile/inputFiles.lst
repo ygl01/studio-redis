@@ -1,4 +1,12 @@
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\service\impl\TestServiceImpl.java
 E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\Redis02SpringbootApplication.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\service\RedisService.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\service\impl\RedisServiceImpl.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\controller\TestController.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\mapper\TestMapper.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\pojo\Test.java
 E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\pojo\User.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\utils\RandomUtil.java
 E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\utils\RedisUtil.java
 E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\config\RedisConfig.java
+E:\studio\redis\redis-02-springboot\src\main\java\com\kuang\service\TestService.java

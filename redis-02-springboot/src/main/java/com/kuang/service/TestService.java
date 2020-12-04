@@ -1,6 +1,6 @@
 package com.kuang.service;
 
-import com.kuang.pojo.Test;
+import com.kuang.pojo.Test1;
 
 import java.util.List;
 
@@ -10,5 +10,7 @@ import java.util.List;
  * @date 2020/12/1 19:51
  */
 public interface TestService {
-    List<Test> findAll();
+    List<Test1> findAll();
+    void start1();
+    void start2();
 }

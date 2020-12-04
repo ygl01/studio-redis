@@ -1,6 +1,6 @@
 package com.kuang.mapper;
 
-import com.kuang.pojo.Test;
+import com.kuang.pojo.Test1;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,5 +12,5 @@ import java.util.List;
  */
 @Mapper
 public interface TestMapper {
-    List<Test> findAll();
+    List<Test1> findAll();
 }
